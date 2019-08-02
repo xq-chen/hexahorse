@@ -66,6 +66,24 @@ bool Bmx055::Initialize(void)
 
 bool Bmx055::read(float& roll, float& pitch, float& yaw)
 {
+#define GYRO_STUB
+#ifdef GYRO_STUB
+    struct {
+        float roll;
+        float pitch;
+        float yaw;
+    } stubData[] = {
+        { -3.210876, 0.876543, 180.000 },
+        { -3.851589, 1.644554, 180.000 },
+        { -3.444665, 0.876543, 180.000 }
+    };
+
+    static int i = 0;
+    roll = stubData[i].roll;
+    pitch = stubData[i].pitch;
+    yaw = stubData[i].yaw;
+    i = (i + 1) % (sizeof(stubData) / sizeof(stubData[0]));
+#else
     float xAccl, yAccl, zAccl;
     float xGyro, yGyro, zGyro;
     float xMag, yMag, zMag;
@@ -82,6 +100,7 @@ bool Bmx055::read(float& roll, float& pitch, float& yaw)
     roll = filter->getRoll();
     pitch = filter->getPitch();
     yaw = filter->getYaw();
+#endif
 
     return true;
 }
